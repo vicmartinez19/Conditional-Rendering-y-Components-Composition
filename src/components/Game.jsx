@@ -1,32 +1,39 @@
 import React, { useState } from 'react';
 import InputNumber from './InputNumber.jsx';
+import Message from './Message.jsx';
 import RestartButton from './RestartButton.jsx';
 import './Game.css';
 
 function Game() {
-  const [secreto] = useState(() => Math.floor(Math.random() * 100) + 1);
+  const [secreto, setSecreto] = useState(() => Math.floor(Math.random() * 100) + 1);
   const [inputVal, setInputVal] = useState('');
-  const [intentos, setIntentos] = useState(0);
+  const [ultimoIntento, setUltimoIntento] = useState(null);
+  const [ganado, setGanado] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!inputVal) return;
-    setIntentos(prev => prev + 1);
+    const num = parseInt(inputVal, 10);
+    if (isNaN(num)) return;
+
+    setUltimoIntento(num);
+    if (num === secreto) {
+      setGanado(true);
+    }
     setInputVal('');
+  };
+
+  const handleRestart = () => {
+    setSecreto(Math.floor(Math.random() * 100) + 1);
+    setUltimoIntento(null);
+    setGanado(false);
   };
 
   return (
     <div className="game-container">
-      <h2 className="game-title">🎯 Adivina el Número Secreto</h2>
-      <p className="game-subtitle">Adivina el número del 1 al 100</p>
-      <InputNumber
-        value={inputVal}
-        onChange={(e) => setInputVal(e.target.value)}
-        onSubmit={handleSubmit}
-        disabled={false}
-      />
-      <div style={{ marginTop: '16px', color: '#94a3b8' }}>Intentos realizados: {intentos}</div>
-      <RestartButton onRestart={() => window.location.reload()} />
+      <h2 className="game-title">🎯 Adivina el Número</h2>
+      <InputNumber value={inputVal} onChange={(e) => setInputVal(e.target.value)} onSubmit={handleSubmit} disabled={ganado} />
+      <Message intento={ultimoIntento} secreto={secreto} ganado={ganado} agotado={false} />
+      {ganado && <RestartButton onRestart={handleRestart} />}
     </div>
   );
 }
