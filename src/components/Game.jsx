@@ -6,34 +6,42 @@ import './Game.css';
 
 function Game() {
   const [secreto, setSecreto] = useState(() => Math.floor(Math.random() * 100) + 1);
+  const [vidas, setVidas] = useState(7);
+  const [historial, setHistorial] = useState([]);
   const [inputVal, setInputVal] = useState('');
-  const [ultimoIntento, setUltimoIntento] = useState(null);
   const [ganado, setGanado] = useState(false);
+  const agotado = vidas <= 0;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const num = parseInt(inputVal, 10);
-    if (isNaN(num)) return;
+    if (isNaN(num) || ganado || agotado) return;
 
-    setUltimoIntento(num);
+    setHistorial([num, ...historial]);
     if (num === secreto) {
       setGanado(true);
+    } else {
+      setVidas(prev => prev - 1);
     }
     setInputVal('');
   };
 
   const handleRestart = () => {
     setSecreto(Math.floor(Math.random() * 100) + 1);
-    setUltimoIntento(null);
+    setVidas(7);
+    setHistorial([]);
     setGanado(false);
   };
 
   return (
     <div className="game-container">
       <h2 className="game-title">🎯 Adivina el Número</h2>
-      <InputNumber value={inputVal} onChange={(e) => setInputVal(e.target.value)} onSubmit={handleSubmit} disabled={ganado} />
-      <Message intento={ultimoIntento} secreto={secreto} ganado={ganado} agotado={false} />
-      {ganado && <RestartButton onRestart={handleRestart} />}
+      <div className="stats-bar">
+        <span>Vidas restantes: {"❤️".repeat(Math.max(0, vidas))}</span>
+      </div>
+      <InputNumber value={inputVal} onChange={(e) => setInputVal(e.target.value)} onSubmit={handleSubmit} disabled={ganado || agotado} />
+      <Message intento={historial[0] || null} secreto={secreto} ganado={ganado} agotado={agotado} />
+      {(ganado || agotado) && <RestartButton onRestart={handleRestart} />}
     </div>
   );
 }
