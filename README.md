@@ -1,5 +1,6 @@
 # Actividad 5: Juego Adivina el Número (Conditional Rendering y Composición)
 
+
 ## 📌 Descripción del Proyecto
 Juego interactivo estructurado bajo la técnica de **Composición de Componentes** y **Renderizado Condicional** en React:
 - Componente `Game`: Estado central del número secreto, vidas e historial.
